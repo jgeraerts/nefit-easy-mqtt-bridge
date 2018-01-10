@@ -1,0 +1,20 @@
+{
+  "name": "nefit-easy-mqtt-bridge",
+  "repository": "https://github.com/jgeraerts/nefit-easy-mqtt-bridge",  
+  "version": "1.0.0",
+  "description": "This app bridges nefit easy to a mqtt topic",
+  "main": "app.js",
+  "dependencies": {
+    "async-mqtt": "^1.0.1",
+    "bluebird": "^3.5.1",
+    "docopt": "^0.6.2",
+    "mqtt": "^2.15.0",
+    "nefit-easy-commands": "^1.8.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jo Geraerts <jo@umask.net>",
+  "license": "MIT"
+}
