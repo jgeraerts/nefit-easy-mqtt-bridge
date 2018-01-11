@@ -10,14 +10,14 @@ Bridge metrics from nefit/buderus/bosch backend to a mqtt topic
  
 # Configuration
  
-The app is configured using multiple environment variables
+The app is configured using multiple environment variables:
 
-  NEFIT_SERIAL_NUMBER
-  NEFIT_ACCESS_KEY
-  NEFIT_PASSWORD
-  MQTT_URL
-  MQTT_USERNAME
-  MQTT_PASSWORD
+    NEFIT_SERIAL_NUMBER 
+    NEFIT_ACCESS_KEY
+    NEFIT_PASSWORD
+    MQTT_URL
+    MQTT_USERNAME
+    MQTT_PASSWORD
 
 # Topics
 
