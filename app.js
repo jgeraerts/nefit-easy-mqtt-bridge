@@ -24,7 +24,7 @@ let params = {
 
 checkOption(params.serialNumber, "NEFIT_SERIAL_NUMBER not set");
 checkOption(params.accessKey,    "NEFIT_ACCESS_KEY not set");
-checkOption(params.password,     "NEFIT_PAsSWORD not set");
+checkOption(params.password,     "NEFIT_PASSWORD not set");
 checkOption(params.mqttUrl,      "MQTT_URL not set.");
 
 const mqttClient = MQTT.connect(params.mqttUrl,
