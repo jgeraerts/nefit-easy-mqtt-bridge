@@ -64,9 +64,18 @@ function publishStatus(nefitClient, mqtt){
         .delay(DELAY).then(() => publishStatus(nefitClient, mqtt));
 }
 
+async function handleMessage(nefitClient, topic, message){
+    let value = parseFloat(message);
+    await nefitClient.setTemperature(value);
+}
+
 Promise.using(nefitClient.connect(), mqttClientP, 
     async (_, mqttClient) => {
         console.log("Connected...");
+        await mqttClient.subscribe("/nefit/".concat(params.serialNumber).concat("/command/settemperature"))
+        mqttClient.on('message', function(topic, message){
+            handleMessage(nefitClient, topic, message);
+        });
         return publishStatus(nefitClient, mqttClient);
     })
     .catch((e) => {

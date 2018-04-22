@@ -2,7 +2,7 @@ version: '2'
 services:
   app:
     build: .
-    command: npm run dev
+    command: npm run app
     environment:
       NEFIT_SERIAL_NUMBER: ${NEFIT_SERIAL_NUMBER}
       NEFIT_ACCESS_KEY: ${NEFIT_ACCESS_KEY}
