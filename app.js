@@ -50,6 +50,7 @@ function publishStatus(nefitClient, mqtt){
         .spread(async (status, pressure, supplyTemperature) => {
             let topic = "/nefit/".concat(params.serialNumber);
             let message = {
+                'mode' : status['user mode'],
                 'setpoint': status['temp setpoint'],
                 'inhouse':  status['in house temp'],
                 'outdoorTemp': status['outdoor temp'],
@@ -65,14 +66,19 @@ function publishStatus(nefitClient, mqtt){
 }
 
 async function handleMessage(nefitClient, topic, message){
-    let value = parseFloat(message);
-    await nefitClient.setTemperature(value);
+    if(topic.endsWith("settemperature")){
+        return await nefitClient.setTemperature(message.toString());
+    }
+    if(topic.endsWith("setmode") && (message == "manual" || message == "clock")) {
+        return await nefitClient.setUserMode(message.toString())
+    }
+    console.log("unsupported message on topic " + topic +": "+message)
 }
 
 Promise.using(nefitClient.connect(), mqttClientP, 
     async (_, mqttClient) => {
         console.log("Connected...");
-        await mqttClient.subscribe("/nefit/".concat(params.serialNumber).concat("/command/settemperature"))
+        await mqttClient.subscribe("/nefit/".concat(params.serialNumber).concat("/command/+"))
         mqttClient.on('message', function(topic, message){
             handleMessage(nefitClient, topic, message);
         });

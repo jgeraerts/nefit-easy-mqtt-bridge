@@ -9,7 +9,7 @@
     "bluebird": "^3.5.1",
     "docopt": "^0.6.2",
     "mqtt": "^2.15.0",
-    "nefit-easy-commands": "^1.8.1"
+    "nefit-easy-commands": "^2.0.0"
   },
   "devDependencies": {},
   "scripts": {
