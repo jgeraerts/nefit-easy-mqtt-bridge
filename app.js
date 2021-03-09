@@ -4,7 +4,7 @@ const MQTT = require('async-mqtt');
 const NefitEasyClient = require('nefit-easy-commands');
 const Promise = require("bluebird");
 
-const DELAY = 300000;
+const DELAY = process.env.POLL_DELAY || 300000;
 
 function checkOption(option, error){
     if(!option){
@@ -71,6 +71,9 @@ async function handleMessage(nefitClient, topic, message){
     }
     if(topic.endsWith("setmode") && (message == "manual" || message == "clock")) {
         return await nefitClient.setUserMode(message.toString())
+    }
+    if(topic.endsWith("sethotwatersupply") && (message == "on" || message == "off")) {
+        return await nefitClient.setHotWaterSupply(message.toString())
     }
     console.log("unsupported message on topic " + topic +": "+message)
 }
