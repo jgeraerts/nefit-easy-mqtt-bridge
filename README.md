@@ -18,6 +18,7 @@ The app is configured using multiple environment variables:
     MQTT_URL
     MQTT_USERNAME
     MQTT_PASSWORD
+    PUBLISH_TO_SEPERATE_TOPICS
 
 # Topics
 
