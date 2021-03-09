@@ -11,7 +11,9 @@
     "mqtt": "^2.15.0",
     "nefit-easy-commands": "^2.0.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "dotenv": "^8.2.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

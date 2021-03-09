@@ -53,9 +53,9 @@ example
 
 The bridge subscribes to the following topics
    
-* /nefit/${serialnumber}/settemperature For valid values see  https://www.npmjs.com/package/nefit-easy-commands#set-temperature
-* /nefit/${serialnumber}/setmode ['manual', 'clock']
-* /nefit/${serialnumber}/sethotwatersupply ['on', 'off']
+* /nefit/${serialnumber}/command/settemperature For valid values see  https://www.npmjs.com/package/nefit-easy-commands#set-temperature
+* /nefit/${serialnumber}/command/setmode ['manual', 'clock']
+* /nefit/${serialnumber}/command/sethotwatersupply ['on', 'off']
 
    
 # TODO
