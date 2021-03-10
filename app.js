@@ -5,6 +5,7 @@ const NefitEasyClient = require('nefit-easy-commands');
 const Promise = require("bluebird");
 
 const DELAY = process.env.POLL_DELAY || 300000;
+const PUBLISH_TO_SEPERATE_TOPICS = process.env.PUBLISH_TO_SEPERATE_TOPICS !== undefined ? process.env.PUBLISH_TO_SEPERATE_TOPICS : false;
 
 function checkOption(option, error){
     if(!option){
@@ -49,19 +50,33 @@ function publishStatus(nefitClient, mqtt, publishOnce = false){
     return Promise.all(promises)
         .spread(async (status, pressure, supplyTemperature) => {
             let topic = "/nefit/".concat(params.serialNumber);
-            let message = {
-                'mode' : status['user mode'],
-                'setpoint': status['temp setpoint'],
-                'inhouse':  status['in house temp'],
-                'outdoorTemp': status['outdoor temp'],
-                'overrideSetpoint': status['temp override temp setpoint'],
-                'manualSetpoint': status['temp manual setpoint'],
-                'hotWaterActive': status['hot water active']? 1 :0,
-                'serial' : params.serialNumber,
-                'pressure': pressure.pressure,
-                'supplyTemperature': supplyTemperature.temperature
-            };
-            await mqtt.publish(topic, JSON.stringify(message));})
+            if (PUBLISH_TO_SEPERATE_TOPICS) {
+                await mqtt.publish(topic+'/mode', status['user mode'].toString());
+                await mqtt.publish(topic+'/setpoint', status['temp setpoint'].toString());
+                await mqtt.publish(topic+'/inhouse', status['in house temp'].toString());
+                await mqtt.publish(topic+'/outdoor_temp', status['outdoor temp'].toString());
+                await mqtt.publish(topic+'/override_setpoint', status['temp override temp setpoint'].toString());
+                await mqtt.publish(topic+'/manual_setpoint',  status['temp manual setpoint'].toString());
+                await mqtt.publish(topic+'/hot_water_active', status['hot water active']? '1' :'0');
+                await mqtt.publish(topic+'/serial', params.serialNumber.toString());
+                await mqtt.publish(topic+'/pressure', pressure.pressure.toString());
+                await mqtt.publish(topic+'/supply_temperature', supplyTemperature.temperature.toString());
+            } else {
+                let message = {
+                    'mode' : status['user mode'],
+                    'setpoint': status['temp setpoint'],
+                    'inhouse':  status['in house temp'],
+                    'outdoorTemp': status['outdoor temp'],
+                    'overrideSetpoint': status['temp override temp setpoint'],
+                    'manualSetpoint': status['temp manual setpoint'],
+                    'hotWaterActive': status['hot water active']? 1 :0,
+                    'serial' : params.serialNumber,
+                    'pressure': pressure.pressure,
+                    'supplyTemperature': supplyTemperature.temperature
+                };
+                await mqtt.publish(topic, JSON.stringify(message));
+            }
+        })
         .delay(DELAY, new Promise((resolve,reject) => !publishOnce ? resolve() : null)).then(() => {
             console.log('delayed')
             return publishStatus(nefitClient, mqtt)

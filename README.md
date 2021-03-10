@@ -19,6 +19,7 @@ The app is configured using multiple environment variables:
     MQTT_USERNAME
     MQTT_PASSWORD
     POLL_DELAY (in ms, defaults to 300000 -> 5 minutes)
+    PUBLISH_TO_SEPERATE_TOPICS (boolean, defaults to false)
 
 # Topics
 
