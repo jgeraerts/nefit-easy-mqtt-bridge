@@ -18,6 +18,7 @@ The app is configured using multiple environment variables:
     MQTT_URL
     MQTT_USERNAME
     MQTT_PASSWORD
+    POLL_DELAY (in ms, defaults to 300000 -> 5 minutes)
 
 # Topics
 
@@ -48,10 +49,15 @@ example
 }
 ```
 
+# Commands
+
+The bridge subscribes to the following topics
+   
+* /nefit/${serialnumber}/command/settemperature For valid values see  https://www.npmjs.com/package/nefit-easy-commands#set-temperature
+* /nefit/${serialnumber}/command/setmode ['manual', 'clock']
+* /nefit/${serialnumber}/command/sethotwatersupply ['on', 'off']
 
    
 # TODO
 
-* Accept commands for setting the temperature
 * Make the topic configurable
-* Make the delay configurable

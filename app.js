@@ -4,7 +4,7 @@ const MQTT = require('async-mqtt');
 const NefitEasyClient = require('nefit-easy-commands');
 const Promise = require("bluebird");
 
-const DELAY = 300000;
+const DELAY = process.env.POLL_DELAY || 300000;
 
 function checkOption(option, error){
     if(!option){
@@ -42,7 +42,7 @@ const nefitClient  = NefitEasyClient({
     password       : params.password
 });
 
-function publishStatus(nefitClient, mqtt){
+function publishStatus(nefitClient, mqtt, publishOnce = false){
     let promises = [nefitClient.status(),
                     nefitClient.pressure(),
                     nefitClient.supplyTemperature(),];
@@ -62,15 +62,32 @@ function publishStatus(nefitClient, mqtt){
                 'supplyTemperature': supplyTemperature.temperature
             };
             await mqtt.publish(topic, JSON.stringify(message));})
-        .delay(DELAY).then(() => publishStatus(nefitClient, mqtt));
+        .delay(DELAY, new Promise((resolve,reject) => !publishOnce ? resolve() : null)).then(() => {
+            console.log('delayed')
+            return publishStatus(nefitClient, mqtt)
+        });
 }
-
-async function handleMessage(nefitClient, topic, message){
+async function handleMessage(nefitClient, mqtt, topic, message){
     if(topic.endsWith("settemperature")){
-        return await nefitClient.setTemperature(message.toString());
+        return await nefitClient.setTemperature(message.toString())
+            .then(() => {
+                console.log('set Temparature to ' + message);
+                publishStatus(nefitClient, mqtt, true)
+            })
     }
     if(topic.endsWith("setmode") && (message == "manual" || message == "clock")) {
         return await nefitClient.setUserMode(message.toString())
+            .then(() => {
+                console.log('setUserMode to ' + message);
+                publishStatus(nefitClient, mqtt, true)
+            })
+    }
+    if(topic.endsWith("sethotwatersupply") && (message == "on" || message == "off")) {
+        return await nefitClient.setHotWaterSupply(message.toString())
+            .then(() => {
+                console.log('set Hot water supply to ' + message);
+                publishStatus(nefitClient, mqtt, true)
+            })
     }
     console.log("unsupported message on topic " + topic +": "+message)
 }
@@ -80,7 +97,7 @@ Promise.using(nefitClient.connect(), mqttClientP,
         console.log("Connected...");
         await mqttClient.subscribe("/nefit/".concat(params.serialNumber).concat("/command/+"))
         mqttClient.on('message', function(topic, message){
-            handleMessage(nefitClient, topic, message);
+            handleMessage(nefitClient, mqttClient, topic, message);
         });
         return publishStatus(nefitClient, mqttClient);
     })
